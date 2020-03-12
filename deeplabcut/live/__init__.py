@@ -1,2 +1,3 @@
-from .dlc_live import *
-from .processor import Processor
+# from .dlc_live import *
+from deeplabcut.live.dlc_live import DLCLive
+from deeplabcut.live.processor import Processor
