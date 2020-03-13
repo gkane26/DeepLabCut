@@ -16,6 +16,7 @@ by Alexander Mathis, Mert Yüksekgönül, Byron Rogers, Matthias Bethge, Mackenz
 https://arxiv.org/abs/1909.11229
 '''
 
+import os
 import numpy as np
 import tensorflow as tf
 vers = (tf.__version__).split('.')

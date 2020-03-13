@@ -1,3 +1,12 @@
+"""
+DeepLabCut2.0 Toolbox (deeplabcut.org)
+© A. & M. Mathis Labs
+https://github.com/AlexEMG/DeepLabCut
+Please see AUTHORS for contributors.
+https://github.com/AlexEMG/DeepLabCut/blob/master/AUTHORS
+Licensed under GNU Lesser General Public License v3.0
+"""
+
 '''
 Python class to perform inference on individual images using specified DLC network (e.g. to be used on live camera feed).
 Please see companion GUI for full program to record video while performing inference.
@@ -48,7 +57,7 @@ class DLCLive(object):
     TFGPUinference: bool, optional
         Perform inference on GPU with Tensorflow code. Introduced in "Pretraining boosts out-of-domain robustness for pose estimation" by
         Alexander Mathis, Mert Yüksekgönül, Byron Rogers, Matthias Bethge, Mackenzie W. Mathis Source: https://arxiv.org/abs/1909.11229
-    dynamic_cropping: either False or tuple containing (detectiontreshold, margin)
+    dynamic: either False or tuple containing (detectiontreshold, margin)
         If the state is true, then dynamic cropping will be performed. That means that if an object is detected (i.e. any body part > detectiontreshold),
         then object boundaries are computed according to the smallest/largest x position and smallest/largest y position of all body parts. This  window is
         expanded by the margin and from then on only the posture within this crop is analyzed (until the object is lost, i.e. <detectiontreshold). The
@@ -83,7 +92,7 @@ class DLCLive(object):
     '''
 
     def __init__(self, config, cropping=None, iteration=None, shuffle=1, trainingsetindex=0,
-                 gputouse=None, useFrozen=True, TFGPUinference=False, dynamic_cropping=False,
+                 gputouse=None, useFrozen=True, TFGPUinference=False, dynamic=(False,.5,10),
                  processor=None, frame_method=None):
 
         self.cropping         = cropping
@@ -93,7 +102,7 @@ class DLCLive(object):
         self.gputouse         = gputouse
         self.useFrozen        = useFrozen
         self.TFGPUinference   = TFGPUinference
-        self.dynamic_cropping = dynamic_cropping
+        self.dynamic          = dynamic
         self.processor        = processor
         self.frame_method     = frame_method
         self.poses            = []
@@ -197,13 +206,9 @@ class DLCLive(object):
         self.dlc_cfg['num_outputs'] = self.dlc_cfg.get('num_outputs', 1)
         self.dlc_cfg['batch_size'] = 1
 
-        # (don't need to have a third value for state, if dynamic_cropping is anything that
-        # evaluates True (ie. any non-None or non-zero tuple) then this will work
-        # I also don't see this get setup anywhere else??
-        # -jls 2020-03-09
-        if self.dynamic_cropping:
-            #(state,detectiontreshold,margin)=dynamic
-            print("Starting analysis in dynamic cropping mode with parameters:", self.dynamic_cropping)
+
+        if self.dynamic[0]: #(state,detectiontreshold,margin)=dynamic
+            print("Starting analysis in dynamic cropping mode with parameters:", self.dynamic)
             self.dlc_cfg['num_outputs']=1
             self.TFGPUinference=False
             print("Switching num_outputs (per animal) to 1 and TFGPUinference to False (all these features are not supported in this mode).")
@@ -290,23 +295,6 @@ class DLCLive(object):
             pose = self.processor.process(pose)
 
         return pose
-
-    #
-    # def _pose_on_thread(self):
-    #     while self.continue_stream:
-    #         if self.frame_method.new_frame:
-    #             self.poses.append(self.get_pose())
-    #
-    #
-    # def start_pose_stream(self):
-    #     if self.frame_method is None:
-    #         raise DLCException("DLCLive object does not have a camera. Cannot start pose stream without a camera.")
-    #     self.continue_stream = True
-    #     threading.Thread(target=self._pose_on_thread).start()
-    #
-    #
-    # def stop_pose_stream(self):
-    #     self.continue_stream = False
 
 
 class DLCLiveException(Exception):
