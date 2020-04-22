@@ -1,6 +1,10 @@
 # Tensorflow checkpoints
-*.ckpt
+*.ckpt*
 snapshot-*
+*.pb
+*.pbtxt
+*.tflite
+*info.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
