@@ -32,7 +32,7 @@ from skimage.util import img_as_ubyte
 # Loading data, and defining model folder
 ####################################################
 
-def analyze_videos(config, videos, videotype='avi', shuffle=1, trainingsetindex=0, gputouse=None, save_as_csv=False,
+def analyze_videos(config, videos, videotype='avi', iteration=None, shuffle=1, trainingsetindex=0, snapshotindex=None, gputouse=None, save_as_csv=False,
                    destfolder=None, batchsize=None, crop=None, get_nframesfrommetadata=True, TFGPUinference=True,
                    dynamic=(False, .5, 10)):
     """
@@ -129,6 +129,10 @@ def analyze_videos(config, videos, videotype='avi', shuffle=1, trainingsetindex=
 
     cfg = auxiliaryfunctions.read_config(config)
     trainFraction = cfg['TrainingFraction'][trainingsetindex]
+
+    # overwrite iteration and snapshot
+    cfg['iteration'] = iteration if iteration is not None else cfg['iteration']
+    cfg['snapshotindex'] = snapshotindex if snapshotindex is not None else cfg['snapshotindex']
 
     if crop is not None:
         cfg['cropping']=True
