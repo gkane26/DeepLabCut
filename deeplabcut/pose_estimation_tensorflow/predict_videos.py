@@ -155,8 +155,13 @@ def analyze_videos(config, videos, videotype='avi', shuffle=1, trainingsetindex=
     else:
         snapshotindex=cfg['snapshotindex']
 
-    increasing_indices = np.argsort([int(m.split('-')[1]) for m in Snapshots])
-    Snapshots = Snapshots[increasing_indices]
+    try:
+        increasing_indices = np.argsort([int(m.split('-')[1]) for m in Snapshots])
+        Snapshots = Snapshots[increasing_indices]
+    except Exception:
+        Snapshots = np.array([s for s in Snapshots if 'snapshot' in s])
+        increasing_indices = np.argsort([int(m.replace('snapshot-', '')) for m in Snapshots])
+        Snapshots = Snapshots[increasing_indices]
 
     print("Using %s" % Snapshots[snapshotindex], "for model", modelfolder)
 

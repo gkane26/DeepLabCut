@@ -5,6 +5,8 @@ https://github.com/eldar/pose-tensorflow
 
 import pprint
 import logging
+import os
+from pathlib import Path
 
 import yaml
 from easydict import EasyDict as edict
@@ -53,7 +55,40 @@ def cfg_from_file(filename):
 
 
 def load_config(filename = "pose_cfg.yaml"):
-    return cfg_from_file(filename)
+    
+    cfg = cfg_from_file(filename)
+
+    ### set project path to config folder!!!
+    project_path = Path(filename).resolve()
+    cfg["project_path"] = str(project_path.parents[4])
+
+    ### set init weights
+
+    init_weight_path = Path(cfg["init_weights"])
+
+    import deeplabcut
+    dlc_path = Path(deeplabcut.__file__).parents[0]
+    pretrained_path = dlc_path / 'pose_estimation_tensorflow' / 'models' / 'pretrained'
+
+    match = False
+    for f in pretrained_path.iterdir():
+        if init_weight_path.stem == f.stem:
+            match = True
+            cfg["init_weights"] = str(f.parents[0] / f.stem) + '.ckpt'
+            break
+    
+    if not match:
+        this_project_dir = str(project_path.parents[4].stem) + '/'
+        if this_project_dir in cfg["init_weights"]:
+            end_path = cfg["init_weights"].split(this_project_dir)[1]
+            cfg["init_weights"] = str(project_path.parents[4] / end_path)
+        else:
+            cfg["init_weights"] = str(project_path.parents[0] / init_weight_path.stem) + '.ckpt'
+    
+    print(cfg["init_weights"])
+
+
+    return cfg
 
 if __name__ == "__main__":
     print(load_config())

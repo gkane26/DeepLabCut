@@ -185,14 +185,19 @@ def extract_frames(config, mode='automatic', algo='kmeans', crop=False, userfeed
 
             if askuser == 'y' or askuser == 'yes' or askuser == 'Ja' or askuser == 'ha'\
                     or askuser == 'oui' or askuser == 'ouais':  # multilanguage support :)
+
+                ## change path to videos folder in project directory
+                v_base = os.path.basename(video)
+                v_file = os.path.normpath(cfg['project_path'] + '/videos/' + v_base)
+
                 if opencv:
-                    cap = cv2.VideoCapture(video)
+                    cap = cv2.VideoCapture(v_file)
                     fps = cap.get(
                         5)  # https://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture-get
                     nframes = int(cap.get(7))
                 else:
                     # Moviepy:
-                    clip = VideoFileClip(video)
+                    clip = VideoFileClip(v_file)
                     fps = clip.fps
                     nframes = int(np.ceil(clip.duration * 1. / fps))
                 indexlength = int(np.ceil(np.log10(nframes)))

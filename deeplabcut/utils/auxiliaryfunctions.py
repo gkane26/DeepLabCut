@@ -122,6 +122,9 @@ def read_config(configname):
                   write_config(configname,cfg)
             else:
                 raise
+
+        ### set project path to config folder!!!
+        cfg["project_path"] = os.path.dirname(os.path.realpath(configname))
         
     else:
         raise FileNotFoundError ("Config file is not found. Please make sure that the file exists and/or that you passed the path of the config file correctly!")
@@ -332,8 +335,15 @@ def GetScorerName(cfg,shuffle,trainFraction,trainingsiterations='unknown'):
 
         modelfolder=os.path.join(cfg["project_path"],str(GetModelFolder(trainFraction,shuffle,cfg)),'train')
         Snapshots = np.array([fn.split('.')[0]for fn in os.listdir(modelfolder) if "index" in fn])
-        increasing_indices = np.argsort([int(m.split('-')[1]) for m in Snapshots])
-        Snapshots = Snapshots[increasing_indices]
+
+        try:
+            increasing_indices = np.argsort([int(m.split('-')[1]) for m in Snapshots])
+            Snapshots = Snapshots[increasing_indices]
+        except Exception:
+            Snapshots = np.array([s for s in Snapshots if 'snapshot' in s])
+            increasing_indices = np.argsort([int(m.replace('snapshot-', '')) for m in Snapshots])
+            Snapshots = Snapshots[increasing_indices]
+
         SNP=Snapshots[snapshotindex]
         trainingsiterations = (SNP.split(os.sep)[-1]).split('-')[-1]
 

@@ -98,6 +98,10 @@ def return_evaluate_network_data(config,shuffle=0,trainingsetindex=0,comparisonb
     ##################################################
     trainFraction=cfg["TrainingFraction"][trainingsetindex]
     datafn,metadatafn=auxiliaryfunctions.GetDataandMetaDataFilenames(trainingsetfolder,trainFraction,shuffle,cfg)
+    
+    ### set project path to config folder!!!
+    cfg["project_path"] = os.path.dirname(os.path.realpath(config))
+    
     modelfolder=os.path.join(cfg["project_path"],str(auxiliaryfunctions.GetModelFolder(trainFraction,shuffle,cfg)))
     path_test_config = Path(modelfolder) / 'test' / 'pose_cfg.yaml'
     # Load meta data

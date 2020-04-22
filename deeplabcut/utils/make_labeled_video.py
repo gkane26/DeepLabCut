@@ -355,7 +355,7 @@ def create_labeled_video(config,videos,videotype='avi',shuffle=1,trainingsetinde
         else:
             videofolder=destfolder
 
-        os.chdir(str(videofolder))
+        
         videotype = Path(video).suffix
         print("Starting % ", videofolder, videos)
         vname = str(Path(video).stem)
@@ -365,18 +365,18 @@ def create_labeled_video(config,videos,videotype='avi',shuffle=1,trainingsetinde
         #notanalyzed,outdataname,sourcedataname,DLCscorer=auxiliaryfunctions.CheckifPostProcessing(folder,vname,DLCscorer,DLCscorerlegacy,suffix='checking')
 
         if filtered==True:
-            videooutname1=os.path.join(vname + DLCscorer+'filtered_labeled.mp4')
-            videooutname2=os.path.join(vname + DLCscorerlegacy+'filtered_labeled.mp4')
+            videooutname1=os.path.join(str(videofolder) + '/' + vname + DLCscorer+'filtered_labeled.mp4')
+            videooutname2=os.path.join(str(videofolder) + '/' + vname + DLCscorerlegacy+'filtered_labeled.mp4')
         else:
-            videooutname1=os.path.join(vname + DLCscorer+'_labeled.mp4')
-            videooutname2=os.path.join(vname + DLCscorerlegacy+'_labeled.mp4')
+            videooutname1=os.path.join(str(videofolder) + '/' + vname + DLCscorer+'_labeled.mp4')
+            videooutname2=os.path.join(str(videofolder) + '/' + vname + DLCscorerlegacy+'_labeled.mp4')
 
         if os.path.isfile(videooutname1) or os.path.isfile(videooutname2):
             print("Labeled video already created.")
         else:
             print("Loading ", video, "and data.")
             datafound,metadata,Dataframe,DLCscorer,suffix=auxiliaryfunctions.LoadAnalyzedData(str(videofolder),vname,DLCscorer,filtered) #returns boolean variable if data was found and metadata + pandas array
-            videooutname=os.path.join(vname + DLCscorer+suffix+'_labeled.mp4')
+            videooutname=os.path.join(str(videofolder) + '/' + vname + DLCscorer+suffix+'_labeled.mp4')
             if datafound and not os.path.isfile(videooutname): #checking again, for this loader video could exist
                 #Loading cropping data used during analysis
                 cropping=metadata['data']["cropping"]
