@@ -254,7 +254,7 @@ def CreateVideoSlow(videooutname,clip,Dataframe,tmpfolder,
             os.remove(file_name)
     os.chdir(start)
 
-def create_labeled_video(config,videos,videotype='avi',shuffle=1,trainingsetindex=0,filtered=False,save_frames=False,Frames2plot=None,delete=False,displayedbodyparts='all',codec='mp4v',outputframerate=None, destfolder=None,draw_skeleton=False,trailpoints = 0,displaycropped=False):
+def create_labeled_video(config,videos,videotype='avi',iteration=None,shuffle=1,trainingsetindex=0,snapshotindex=None,filtered=False,save_frames=False,Frames2plot=None,delete=False,displayedbodyparts='all',codec='mp4v',outputframerate=None, destfolder=None,draw_skeleton=False,trailpoints = 0,displaycropped=False):
     """
     Labels the bodyparts in a video. Make sure the video is already analyzed by the function 'analyze_video'
 
@@ -337,6 +337,11 @@ def create_labeled_video(config,videos,videotype='avi',shuffle=1,trainingsetinde
 
     """
     cfg = auxiliaryfunctions.read_config(config)
+
+    # overwrite iteration and snapshotindex
+    cfg['iteration'] = iteration if iteration is not None else cfg['iteration']
+    cfg['snapshotindex'] = snapshotindex if snapshotindex is not None else cfg['snapshotindex']
+    
     trainFraction = cfg['TrainingFraction'][trainingsetindex]
     DLCscorer,DLCscorerlegacy = auxiliaryfunctions.GetScorerName(cfg,shuffle,trainFraction) #automatically loads corresponding model (even training iteration based on snapshot index)
 

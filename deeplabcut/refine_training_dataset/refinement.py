@@ -397,9 +397,11 @@ class MainFrame(wx.Frame):
             # self.num_joints = len(self.bodyparts)
             # self.bodyparts =  bodyParts[np.sort(idx)]
             self.index = list(self.Dataframe.iloc[:,0].index)
+            self.index = [i.replace('\\', '/') for i in self.index]
+
             # Reading images
 
-            self.img = os.path.join(self.project_path,self.index[self.iter])
+            self.img = os.path.normpath(self.project_path + '/' + self.index[self.iter])
             img_name = Path(self.img).name
             self.norm,self.colorIndex = self.image_panel.getColorIndices(self.img,self.bodyparts)
             # Adding Slider and Checkbox
@@ -424,7 +426,8 @@ class MainFrame(wx.Frame):
                 textBox.ShowModal()
                 self.threshold = float(textBox.GetValue())
                 textBox.Destroy()
-                self.img = os.path.join(self.project_path,self.index[self.iter])
+
+                self.img = os.path.normpath(self.project_path + '/' + self.index[self.iter])
                 img_name = Path(self.img).name
                 self.axes.clear()
                 self.preview = False
@@ -469,7 +472,7 @@ class MainFrame(wx.Frame):
 
         if len(self.index) > self.iter:
             self.updatedCoords = []
-            self.img = os.path.join(self.project_path,self.index[self.iter])
+            self.img = os.path.normpath(self.project_path + '/' + self.index[self.iter])
             img_name = Path(self.img).name
 
             # Plotting
@@ -485,7 +488,7 @@ class MainFrame(wx.Frame):
                     self.index = list(self.Dataframe.iloc[:,0].index)
                 self.iter = self.iter - 1
 
-                self.img = os.path.join(self.project_path,self.index[self.iter])
+                self.img = os.path.normpath(self.project_path,self.index[self.iter].replace('\\', '/'))
                 img_name = Path(self.img).name
 
                 self.figure,self.axes,self.canvas,self.toolbar = self.image_panel.drawplot(self.img,img_name,self.iter,self.index,self.threshold,self.bodyparts,self.colormap,self.preview,keep_view=self.view_locked)
@@ -517,7 +520,7 @@ class MainFrame(wx.Frame):
         if self.iter >= 0:
             self.updatedCoords = []
             # Reading Image
-            self.img = os.path.join(self.project_path,self.index[self.iter])
+            self.img = os.path.normpath(self.project_path + '/' + self.index[self.iter])
             img_name = Path(self.img).name
 
             # Plotting
@@ -564,7 +567,7 @@ class MainFrame(wx.Frame):
     def check_labels(self):
         print("Checking labels if they are outside the image")
         for i in self.Dataframe.index:
-            image_name = os.path.join(self.project_path,i)
+            image_name = os.path.normpath(self.project_path + '/' + i.replace('\\', '/'))
             im = PIL.Image.open(image_name)
             width, height = im.size
             for bpindex, bp in enumerate(self.bodyparts):
