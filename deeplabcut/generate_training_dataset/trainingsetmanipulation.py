@@ -628,6 +628,9 @@ def create_training_dataset(config,num_shuffles=1,Shuffles=None,windows2linux=Fa
     Data = merge_annotateddatasets(cfg,project_path,Path(os.path.join(project_path,trainingsetfolder)),windows2linux)
     Data = Data[scorer] #extract labeled data
 
+    # fix data indexes (in case they use windows paths)
+    Data.index = [i.replace('\\', '/') for i in Data.index]
+
     #loading & linking pretrained models
     if net_type is None: #loading & linking pretrained models
         net_type =cfg.get('default_net_type', 'resnet_50')
