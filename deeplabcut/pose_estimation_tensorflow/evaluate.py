@@ -300,9 +300,14 @@ def evaluate_network(config,Shuffles=[1],trainingsetindex=0,plotting = None,show
               Snapshots[0]
             except IndexError:
               raise FileNotFoundError("Snapshots not found! It seems the dataset for shuffle %s and trainFraction %s is not trained.\nPlease train it before evaluating.\nUse the function 'train_network' to do so."%(shuffle,trainFraction))
-
-            increasing_indices = np.argsort([int(m.split('-')[1]) for m in Snapshots])
-            Snapshots = Snapshots[increasing_indices]
+                
+            try:
+                increasing_indices = np.argsort([int(m.split('-')[1]) for m in Snapshots])
+                Snapshots = Snapshots[increasing_indices]
+            except Exception:
+                Snapshots = np.array([s for s in Snapshots if 'snapshot' in s])
+                increasing_indices = np.argsort([int(m.replace('snapshot-', '')) for m in Snapshots])
+                Snapshots = Snapshots[increasing_indices]
 
             if cfg["snapshotindex"] == -1:
                 snapindices = [-1]
